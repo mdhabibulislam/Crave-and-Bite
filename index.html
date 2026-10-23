@@ -126,6 +126,10 @@ footer h4{margin:0 0 6px;color:var(--y);font-style:italic}footer a{display:block
 .own{color:#888;font-size:.75rem;margin-left:10px;text-decoration:none}.own:hover{color:var(--y)}
 .promo{display:flex;gap:8px;margin:10px 0 2px}.promo input{flex:1}.promo .btn{transform:none;box-shadow:none;padding:0 14px}
 .sr{display:flex;justify-content:space-between;font-weight:700;padding:3px 0}
+.pop{overflow:hidden;padding:20px}.pop [hidden]{display:none!important}
+.pop .pbox{width:auto;max-width:100%;max-height:none;overflow:visible;align-items:center}
+.pop .pbox img{width:auto;height:auto;max-width:min(92vw,520px);max-height:86vh;object-fit:contain}
+.pop .pclose{top:-14px;right:-14px}
 </style>
 </head>
 <body>
@@ -218,7 +222,7 @@ footer h4{margin:0 0 6px;color:var(--y);font-style:italic}footer a{display:block
 <div class="pop" id="pop" role="dialog" aria-modal="true" aria-labelledby="ptitle"><div class="pbox">
  <button class="pclose" id="pclose" type="button" aria-label="Close offer">✕</button>
  <img id="pimg" alt="" hidden>
- <div class="pinfo"><h2 id="ptitle"></h2><p id="pdesc" hidden></p><p class="note" id="pmeta" hidden></p></div>
+ <div class="pinfo" id="pinfo"><h2 id="ptitle"></h2><p id="pdesc" hidden></p><p class="note" id="pmeta" hidden></p></div>
  <button class="btn" id="pcta" type="button">Order Now</button>
 </div></div>
 <div class="bar" id="bar"><button class="btn" type="button" data-open id="barBtn">View order</button></div>
@@ -334,12 +338,12 @@ function renderAll(){if(cat!=="All"&&!S.cats.includes(cat))cat="All";renderChips
   $("#ptitle").textContent=o.title;$("#pdesc").textContent=o.description||"";$("#pdesc").hidden=!o.description;
   const m=ometa(o);$("#pmeta").textContent=m;$("#pmeta").hidden=!m;
   const i=$("#pimg");if(o.image_url){i.src=o.image_url;i.alt=o.title;i.hidden=false}else i.hidden=true;
-  cta.textContent=o.cta_text||"Order Now";pop.dataset.link=o.cta_link||"#menu";
+  cta.textContent=o.cta_text||"Order Now";$("#pinfo").hidden=!!o.image_url;cta.hidden=!!o.image_url;pop.dataset.link=o.cta_link||"#menu";
   last=document.activeElement;pop.classList.add("open");document.body.style.overflow="hidden";x.focus();
  }
  x.onclick=close;pop.addEventListener("click",e=>{if(e.target===pop)close()});
  cta.onclick=()=>{const l=pop.dataset.link;close();if(l.startsWith("#")){try{$(l).scrollIntoView()}catch(e){}}else window.open(l,"_blank","noopener")};
- document.addEventListener("keydown",e=>{if(!pop.classList.contains("open"))return;if(e.key==="Escape")close();if(e.key==="Tab"){e.preventDefault();(document.activeElement===x?cta:x).focus()}});
+ document.addEventListener("keydown",e=>{if(!pop.classList.contains("open"))return;if(e.key==="Escape")close();if(e.key==="Tab"){e.preventDefault();(document.activeElement===x&&!cta.hidden?cta:x).focus()}});
  window.__popup=(of,st)=>{const s=st[0];if(!s||!s.popup_enabled||!s.popup_offer_id)return;const o=of.find(v=>v.id===s.popup_offer_id&&offerLive(v));if(o)open(o)};
 })();
 // ---- start: request offers/settings immediately (popup), menu in parallel ----
